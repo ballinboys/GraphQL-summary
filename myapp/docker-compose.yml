@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: summary_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend-network
+
+  api:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - ml
+    environment:
+      DATABASE_URL: postgres://postgres:123@db:5432/summary_db?sslmode=disable
+      ML_SERVICE_URL: http://ml:5000/generate
+    networks:
+      - backend-network
+
+  ml:
+    build:
+      context: ./ml_dummy
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    networks:
+      - backend-network
+
+volumes:
+  pgdata:
+
+networks:
+  backend-network:
+    driver: bridge

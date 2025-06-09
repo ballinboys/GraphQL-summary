@@ -1,0 +1,22 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Summary {
+  id: ID!
+  input: String!
+  summary: String!
+  createdAt: String!
+}
+
+type Query {
+  # Ambil semua ringkasan yang tersimpan
+  summaries: [Summary!]!
+  summaryByID(id: ID!): Summary
+}
+
+type Mutation {
+  # Buat ringkasan baru dari input text
+  createSummary(input: String!): Summary!
+}
